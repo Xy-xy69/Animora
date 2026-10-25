@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIMORA | Anime Discovery</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d16;color:#fff;font-family:Arial,sans-serif}
+header{padding:20px 7%;background:#171725;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{font-size:25px;font-weight:bold;letter-spacing:2px}
+.logo span{color:#ff668f}
+input{padding:12px 16px;border-radius:25px;border:1px solid #39394c;background:#242436;color:white;width:220px}
+.hero{padding:75px 8%;background:linear-gradient(90deg,#10101bf5,#10101b77),url('https://images.unsplash.com/photo-1578632767115-351bb976b6b0?w=1500') center/cover}
+.hero h1{font-size:clamp(40px,7vw,65px);margin-bottom:15px}
+.hero h1 span{color:#ff668f}
+.hero p{max-width:500px;color:#d0cede;line-height:1.7}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 16px;font-weight:bold}
+.primary{background:#ff668f;color:#17111a;margin-top:20px}
+main{max-width:1200px;margin:auto;padding:35px 20px}
+h2{margin-bottom:20px}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:25px}
+.chip{background:#222235;color:#ccc;border:1px solid #39394c}
+.chip.active,.chip:hover{background:#ff668f;color:#17111a}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#191925;border-radius:14px;overflow:hidden;border:1px solid #29293b;transition:.2s}
+.card:hover{transform:translateY(-5px);border-color:#ff668f}
+.poster{height:240px;background:#29293b}
+.poster img{width:100%;height:100%;object-fit:cover}
+.info{padding:14px}
+.info h3{margin-bottom:8px}
+.meta{font-size:12px;color:#aaa;margin-bottom:12px}
+.tag{display:inline-block;background:#302744;color:#d8c4ff;padding:5px 8px;border-radius:15px;font-size:11px;margin:2px}
+.actions{display:flex;gap:7px;margin-top:12px}
+.actions button{flex:1;font-size:12px;background:#ff668f;color:#17111a}
+.actions button:last-child{background:#29293b;color:white}
+.modal{display:none;position:fixed;inset:0;background:#000d;z-index:10;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.modal.show{display:flex}
+.box{background:#191925;padding:25px;border-radius:17px;width:min(650px,100%);position:relative}
+.box img{width:130px;height:185px;object-fit:cover;border-radius:10px;float:left;margin:0 20px 15px 0}
+.box p{color:#ccc;line-height:1.7;margin:15px 0}
+.close{position:absolute;right:15px;top:12px;background:#333;color:white}
+.watch{display:flex;gap:9px;flex-wrap:wrap;clear:both;padding-top:15px}
+.watch a{background:#29293b;padding:11px;border-radius:8px;color:white;text-decoration:none;font-size:13px}
+.watch a:hover{background:#ff668f;color:black}
+footer{text-align:center;padding:30px;color:#888;border-top:1px solid #29293b;margin-top:40px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){header{padding:15px;gap:10px}.logo{font-size:19px}input{width:150px}.grid{grid-template-columns:repeat(2,1fr)}.poster{height:190px}.hero{padding:65px 25px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">ANI<span>MORA</span></div>
+<input id="search" placeholder="Search anime...">
+</header>
+
+<section class="hero">
+<h1>Find your<br><span>next anime.</span></h1>
+<p>Discover amazing anime series and movies. Explore new worlds, unforgettable stories and legendary characters.</p>
+<button class="primary" onclick="document.getElementById('discover').scrollIntoView({behavior:'smooth'})">Explore Anime ↓</button>
+</section>
+
+<main id="discover">
+<h2>✦ Discover Anime</h2>
+<div class="filters" id="filters">
+<button class="chip active" data-filter="All">All</button>
+<button class="chip" data-filter="Action">Action</button>
+<button class="chip" data-filter="Adventure">Adventure</button>
+<button class="chip" data-filter="Romance">Romance</button>
+<button class="chip" data-filter="Fantasy">Fantasy</button>
+<button class="chip" data-filter="Drama">Drama</button>
+<button class="chip" data-filter="Sci-Fi">Sci-Fi</button>
+</div>
+<div class="grid" id="grid"></div>
+</main>
+
+<div class="modal" id="modal">
+<div class="box">
+<button class="close" onclick="closeModal()">✕</button>
+<img id="detailImg" alt="Anime poster">
+<h2 id="detailTitle"></h2>
+<div id="detailMeta" class="meta"></div>
+<p id="detailDesc"></p>
+<h3>Where to watch ↗</h3>
+<div class="watch" id="watch"></div>
+</div>
+</div>
+
+<footer>ANIMORA © 2026 · Made for Anime Lovers ♡</footer>
+
+<script>
+const anime=[
+{title:"Attack on Titan",year:"2013–2023",score:"9.1",genre:["Action","Drama","Fantasy"],img:"https://cdn.myanimelist.net/images/anime/10/47347l.jpg",desc:"Humanity fights for survival behind massive walls as terrifying Titans threaten civilization. A thrilling story full of mysteries, battles and unexpected twists."},
+{title:"One Piece",year:"1999–",score:"9.0",genre:["Action","Adventure"],img:"https://cdn.myanimelist.net/images/anime/6/73245l.jpg",desc:"Join Monkey D. Luffy and his crew on an incredible adventure to find the legendary One Piece treasure. A story about friendship, dreams and freedom."},
+{title:"Jujutsu Kaisen",year:"2020–",score:"8.5",genre:["Action","Fantasy"],img:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",desc:"Yuji Itadori enters the dangerous world of cursed spirits. Incredible battles, powerful characters and supernatural adventures await."},
+{title:"Your Name",year:"2016",score:"8.8",genre:["Romance","Drama","Fantasy"],img:"https://cdn.myanimelist.net/images/anime/5/87048l.jpg",desc:"Two teenagers mysteriously begin switching bodies despite living far apart. A beautiful movie about love, destiny and connection."},
+{title:"Demon Slayer",year:"2019–",score:"8.5",genre:["Action","Adventure","Fantasy"],img:"https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",desc:"Tanjiro joins the Demon Slayer Corps after tragedy strikes his family. Experience breathtaking animation and emotional storytelling."},
+{title:"Haikyu!!",year:"2014–2020",score:"8.4",genre:["Drama"],img:"https://cdn.myanimelist.net/images/anime/7/76014l.jpg",desc:"A determined volleyball player pursues his dream of becoming a great athlete. An inspiring story about teamwork and perseverance."},
+{title:"Steins;Gate",year:"2011",score:"9.0",genre:["Sci-Fi","Drama"],img:"https://cdn.myanimelist.net/images/anime/5/73199l.jpg",desc:"A group of friends accidentally discover a way to send messages into the past. Their discovery changes everything."},
+{title:"Frieren",year:"2023–",score:"9.3",genre:["Adventure","Fantasy","Drama"],img:"https://cdn.myanimelist.net/images/anime/1015/138006l.jpg",desc:"An elf mage travels through a world she once saved, learning about friendship, memories and the passage of time."},
+{title:"Spy x Family",year:"2022–",score:"8.4",genre:["Action","Comedy"],img:"https://cdn.myanimelist.net/images/anime/1441/122795l.jpg",desc:"A spy, an assassin and a telepath form a fake family while hiding their real identities. Comedy and action collide."},
+{title:"Violet Evergarden",year:"2018",score:"8.6",genre:["Drama","Fantasy"],img:"https://cdn.myanimelist.net/images/anime/1795/95088l.jpg",desc:"A former soldier becomes a letter writer and learns to understand human emotions through the stories of others."},
+{title:"A Silent Voice",year:"2016",score:"8.9",genre:["Drama"],img:"https://cdn.myanimelist.net/images/anime/1122/96435l.jpg",desc:"A moving movie about accountability, empathy, communication and second chances."},
+{title:"Cyberpunk: Edgerunners",year:"2022",score:"8.6",genre:["Sci-Fi","Action","Drama"],img:"https://cdn.myanimelist.net/images/anime/1818/97984l.jpg",desc:"A young street kid struggles to survive in a futuristic city full of danger, technology and ambition. Intended for mature audiences."}
+];
+
+let filter="All";
+const grid=document.getElementById("grid");
+
+function render(){
+const q=document.getElementById("search").value.toLowerCase();
+const list=anime.filter(a=>(filter==="All"||a.genre.includes(filter))&&(a.title.toLowerCase().includes(q)||a.genre.join(" ").toLowerCase().includes(q)));
+grid.innerHTML=list.map((a,i)=>`
+<div class="card">
+<div class="poster"><img src="${a.img}" alt="${a.title}" loading="lazy"></div>
+<div class="info">
+<h3>${a.title}</h3>
+<div class="meta">★ ${a.score} · ${a.year}</div>
+${a.genre.map(g=>`<span class="tag">${g}</span>`).join("")}
+<div class="actions">
+<button onclick="details('${a.title}')">View Details</button>
+<button onclick="details('${a.title}')">Watch ▶</button>
+</div>
+</div>
+</div>`).join("")||"<p>No anime found.</p>";
+}
+
+function details(title){
+const a=anime.find(x=>x.title===title);
+document.getElementById("detailImg").src=a.img;
+document.getElementById("detailTitle").textContent=a.title;
+document.getElementById("detailMeta").textContent=`★ ${a.score} · ${a.year} · ${a.genre.join(", ")}`;
+document.getElementById("detailDesc").textContent=a.desc;
+const q=encodeURIComponent(a.title);
+document.getElementById("watch").innerHTML=`
+<a target="_blank" rel="noopener" href="https://www.crunchyroll.com/search?q=${q}">Crunchyroll ↗</a>
+<a target="_blank" rel="noopener" href="https://www.netflix.com/search?q=${q}">Netflix ↗</a>
+<a target="_blank" rel="noopener" href="https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${q}">Prime Video ↗</a>
+<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}+official+anime">YouTube ↗</a>`;
+document.getElementById("modal").classList.add("show");
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("filters").addEventListener("click",e=>{
+if(!e.target.dataset.filter)return;
+filter=e.target.dataset.filter;
+document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("active",b===e.target));
+render();
+});
+render();
+</script>
+</body>
+</html>
